@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using WebApplication1.Models;
 using WebApplication1.Models.DTO;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebApplication1.Controllers
 {
@@ -16,19 +17,20 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private static List<User> users = new List<User>();
+        private readonly AppDataContext _dbContext;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(AppDataContext dbContext, IConfiguration configuration)
         {
+            _dbContext = dbContext;
             _configuration = configuration;
         }
 
         [HttpPost("register")]
-        public ActionResult<User> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserDto request)
         {
-            // Check if the username already exists
-            if (users.Exists(u => u.UserName == request.Username))
+            // Check if the username already exists in the database
+            if (await _dbContext.Users.AnyAsync(u => u.UserName == request.Username))
             {
                 return BadRequest("Username already exists");
             }
@@ -41,15 +43,17 @@ namespace WebApplication1.Controllers
                 PasswordHash = passwordHash
             };
 
-            users.Add(newUser);
+            // Add the new user to the database
+            _dbContext.Users.Add(newUser);
+            await _dbContext.SaveChangesAsync();
 
             return Ok(newUser);
         }
 
         [HttpPost("login")]
-        public ActionResult<string> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(UserDto request)
         {
-            User user = users.Find(u => u.UserName == request.Username);
+            User user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username);
 
             if (user == null)
             {
@@ -64,24 +68,24 @@ namespace WebApplication1.Controllers
             string token = CreateToken(user);
             return Ok(token);
         }
-
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
+    {
+        new Claim(ClaimTypes.Name, user.UserName)
+    };
 
-            // Generate a random key (64 bytes = 512 bits)
-            var randomBytes = new byte[64];
-            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            var keyBytes = Convert.FromBase64String(_configuration.GetSection("AppSettings:Token").Value);
+
+            // Ensure key size is at least 512 bits
+            if (keyBytes.Length < 64)
             {
-                rng.GetBytes(randomBytes);
+                throw new InvalidOperationException("Key size is too small for the chosen algorithm.");
             }
 
-            var key = new SymmetricSecurityKey(randomBytes);
+            var key = new SymmetricSecurityKey(keyBytes);
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
                 claims: claims,
@@ -93,5 +97,8 @@ namespace WebApplication1.Controllers
 
             return jwt;
         }
+
+
+
     }
 }

@@ -1,8 +1,13 @@
-﻿namespace WebApplication1.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApplication1.Models.DTO
 {
     public class UserDto
     {
-        public required string Username { get; set; }
-        public required string Password { get; set; } 
+        [Required]
+        public string Username { get; set; }
+
+        [Required]
+        public string Password { get; set; }
     }
 }
