@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Models;
 
@@ -11,9 +12,11 @@ using WebApplication1.Models;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    partial class AppDataContextModelSnapshot : ModelSnapshot
+    [Migration("20231223112800_AddUserWorkTasks")]
+    partial class AddUserWorkTasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,9 +149,6 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("HoursWorked")
-                        .HasColumnType("float");
-
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -184,35 +184,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WorkTasks");
-                });
-
-            modelBuilder.Entity("WorkTaskHours", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DateLogged")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Hours")
-                        .HasColumnType("float");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkTaskId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WorkTaskId");
-
-                    b.ToTable("WorkTaskHours");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.UserRole", b =>
@@ -253,25 +224,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("WorkTask");
                 });
 
-            modelBuilder.Entity("WorkTaskHours", b =>
-                {
-                    b.HasOne("WebApplication1.Models.User", "User")
-                        .WithMany("WorkTaskHours")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.WorkTaskModel.WorkTask", "WorkTask")
-                        .WithMany("WorkTaskHours")
-                        .HasForeignKey("WorkTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("WorkTask");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -282,15 +234,11 @@ namespace WebApplication1.Migrations
                     b.Navigation("UserRoles");
 
                     b.Navigation("UserWorkTasks");
-
-                    b.Navigation("WorkTaskHours");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTask", b =>
                 {
                     b.Navigation("UserWorkTasks");
-
-                    b.Navigation("WorkTaskHours");
                 });
 #pragma warning restore 612, 618
         }
