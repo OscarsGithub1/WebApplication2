@@ -1,4 +1,5 @@
-﻿using WebApplication1.Models.WorkTaskModel;
+﻿using WebApplication1.Models.BusinessOpportunitys;
+using WebApplication1.Models.WorkTaskModel;
 
 namespace WebApplication1.Models
 {
@@ -16,6 +17,7 @@ namespace WebApplication1.Models
         public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<UserWorkTask> UserWorkTasks { get; set; }
         public ICollection<WorkTaskHours> WorkTaskHours { get; set; }
+        public ICollection<UserBusinessOpportunity> UserBusinessOpportunities { get; set; }
 
 
     }

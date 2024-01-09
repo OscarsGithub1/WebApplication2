@@ -23,6 +23,9 @@
         public double HoursWorked { get; set; } // Add this line
 
 
+        public bool IsCompleted { get; set; } = false; // New property, defaulting to false
+
+
         public ICollection<UserWorkTask> UserWorkTasks { get; set; }
 
         public ICollection<WorkTaskHours> WorkTaskHours { get; set; }

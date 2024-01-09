@@ -178,6 +178,7 @@ namespace WebApplication1.Controllers
                     Company = wt.Company,
                     ContactPerson = wt.ContactPerson,
                     OrderDate = wt.OrderDate,
+                    HoursWorked = wt.HoursWorked,
                     // ... other properties as needed
                 })
                 .ToListAsync();
@@ -189,6 +190,49 @@ namespace WebApplication1.Controllers
 
             return Ok(userWorkTasks);
         }
+
+        [HttpPut("complete/{id}")]
+        public async Task<IActionResult> CompleteWorkTask(int id)
+        {
+            var workTask = await _context.WorkTasks.FindAsync(id);
+            if (workTask == null)
+            {
+                return NotFound("WorkTask not found.");
+            }
+
+            workTask.IsCompleted = true;
+            await _context.SaveChangesAsync();
+
+            return Ok("WorkTask marked as completed.");
+        }
+
+        [HttpGet("userWorkTasksStatus/{userId}")]
+        public async Task<IActionResult> GetUserWorkTasksStatus(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var completedTasksCount = await _context.UserWorkTasks
+                .Where(uwt => uwt.UserId == userId && uwt.WorkTask.IsCompleted)
+                .CountAsync();
+
+            var ongoingTasksCount = await _context.UserWorkTasks
+                .Where(uwt => uwt.UserId == userId && !uwt.WorkTask.IsCompleted)
+                .CountAsync();
+
+            return Ok(new
+            {
+                UserId = userId,
+                CompletedTasksCount = completedTasksCount,
+                OngoingTasksCount = ongoingTasksCount
+            });
+        }
+
+
+
 
 
 
