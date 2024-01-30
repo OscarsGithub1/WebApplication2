@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Models;
 
@@ -11,9 +12,11 @@ using WebApplication1.Models;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    partial class AppDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240122150127_AddWorkTaskOpportunity")]
+    partial class AddWorkTaskOpportunity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,21 +218,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("UserWorkTasks");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.UserWorkTaskOpportunity", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkTaskOpportunityId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "WorkTaskOpportunityId");
-
-                    b.HasIndex("WorkTaskOpportunityId");
-
-                    b.ToTable("UserWorkTaskOpportunities");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTask", b =>
                 {
                     b.Property<int>("Id")
@@ -336,11 +324,6 @@ namespace WebApplication1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -354,16 +337,13 @@ namespace WebApplication1.Migrations
                     b.Property<DateTime>("OpportunityDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OpportunityName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal>("OpportunityValue")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("PipelineLevel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesResponsible")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -467,25 +447,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("WorkTask");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.UserWorkTaskOpportunity", b =>
-                {
-                    b.HasOne("User", "User")
-                        .WithMany("UserWorkTaskOpportunities")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.WorkTaskModel.WorkTaskOpportunity", "WorkTaskOpportunity")
-                        .WithMany("UserWorkTaskOpportunities")
-                        .HasForeignKey("WorkTaskOpportunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("WorkTaskOpportunity");
-                });
-
             modelBuilder.Entity("WorkTaskHours", b =>
                 {
                     b.HasOne("User", "User")
@@ -511,8 +472,6 @@ namespace WebApplication1.Migrations
 
                     b.Navigation("UserRoles");
 
-                    b.Navigation("UserWorkTaskOpportunities");
-
                     b.Navigation("UserWorkTasks");
 
                     b.Navigation("WorkTaskHours");
@@ -533,11 +492,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("UserWorkTasks");
 
                     b.Navigation("WorkTaskHours");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTaskOpportunity", b =>
-                {
-                    b.Navigation("UserWorkTaskOpportunities");
                 });
 #pragma warning restore 612, 618
         }

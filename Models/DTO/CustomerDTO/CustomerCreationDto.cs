@@ -7,5 +7,7 @@
         public string WebsiteLink { get; set; }
         public string PostalCode { get; set; }
         public string TypeOfCustomer { get; set; }
+        public List<int> UserIds { get; set; }
+
     }
 }

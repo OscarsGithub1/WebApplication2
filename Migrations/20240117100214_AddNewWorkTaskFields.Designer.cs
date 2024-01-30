@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Models;
 
@@ -11,9 +12,11 @@ using WebApplication1.Models;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    partial class AppDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240117100214_AddNewWorkTaskFields")]
+    partial class AddNewWorkTaskFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,33 +24,6 @@ namespace WebApplication1.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("LastLogin")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LoginCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
 
             modelBuilder.Entity("WebApplication1.Models.BusinessOpportunitys.BusinessOpportunity", b =>
                 {
@@ -75,6 +51,21 @@ namespace WebApplication1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BusinessOpportunities");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.BusinessOpportunitys.UserBusinessOpportunity", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusinessOpportunityId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "BusinessOpportunityId");
+
+                    b.HasIndex("BusinessOpportunityId");
+
+                    b.ToTable("UserBusinessOpportunities");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Company", b =>
@@ -170,19 +161,31 @@ namespace WebApplication1.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.UserBusinessOpportunity", b =>
+            modelBuilder.Entity("WebApplication1.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("BusinessOpportunityId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LoginCount")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "BusinessOpportunityId");
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("BusinessOpportunityId");
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("UserBusinessOpportunities");
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.UserRole", b =>
@@ -213,21 +216,6 @@ namespace WebApplication1.Migrations
                     b.HasIndex("WorkTaskId");
 
                     b.ToTable("UserWorkTasks");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.UserWorkTaskOpportunity", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WorkTaskOpportunityId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "WorkTaskOpportunityId");
-
-                    b.HasIndex("WorkTaskOpportunityId");
-
-                    b.ToTable("UserWorkTaskOpportunities");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTask", b =>
@@ -328,48 +316,6 @@ namespace WebApplication1.Migrations
                     b.ToTable("WorkTasks");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTaskOpportunity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsClosed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("OpportunityDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("OpportunityValue")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("PipelineLevel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SalesResponsible")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkTaskOpportunities");
-                });
-
             modelBuilder.Entity("WorkTaskHours", b =>
                 {
                     b.Property<int>("Id")
@@ -399,18 +345,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("WorkTaskHours");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Company", b =>
-                {
-                    b.HasOne("User", "Responsible")
-                        .WithMany()
-                        .HasForeignKey("ResponsibleUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Responsible");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.UserBusinessOpportunity", b =>
+            modelBuilder.Entity("WebApplication1.Models.BusinessOpportunitys.UserBusinessOpportunity", b =>
                 {
                     b.HasOne("WebApplication1.Models.BusinessOpportunitys.BusinessOpportunity", "BusinessOpportunity")
                         .WithMany("UserBusinessOpportunities")
@@ -418,7 +353,7 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User", "User")
+                    b.HasOne("WebApplication1.Models.User", "User")
                         .WithMany("UserBusinessOpportunities")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -429,6 +364,17 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.Company", b =>
+                {
+                    b.HasOne("WebApplication1.Models.User", "Responsible")
+                        .WithMany()
+                        .HasForeignKey("ResponsibleUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Responsible");
+                });
+
             modelBuilder.Entity("WebApplication1.Models.UserRole", b =>
                 {
                     b.HasOne("WebApplication1.Models.Role", "Role")
@@ -437,7 +383,7 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User", "User")
+                    b.HasOne("WebApplication1.Models.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -450,7 +396,7 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.UserWorkTask", b =>
                 {
-                    b.HasOne("User", "User")
+                    b.HasOne("WebApplication1.Models.User", "User")
                         .WithMany("UserWorkTasks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,30 +411,11 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
 
                     b.Navigation("WorkTask");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.UserWorkTaskOpportunity", b =>
-                {
-                    b.HasOne("User", "User")
-                        .WithMany("UserWorkTaskOpportunities")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.WorkTaskModel.WorkTaskOpportunity", "WorkTaskOpportunity")
-                        .WithMany("UserWorkTaskOpportunities")
-                        .HasForeignKey("WorkTaskOpportunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("WorkTaskOpportunity");
                 });
 
             modelBuilder.Entity("WorkTaskHours", b =>
                 {
-                    b.HasOne("User", "User")
+                    b.HasOne("WebApplication1.Models.User", "User")
                         .WithMany("WorkTaskHours")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -503,19 +430,6 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
 
                     b.Navigation("WorkTask");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("UserBusinessOpportunities");
-
-                    b.Navigation("UserRoles");
-
-                    b.Navigation("UserWorkTaskOpportunities");
-
-                    b.Navigation("UserWorkTasks");
-
-                    b.Navigation("WorkTaskHours");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.BusinessOpportunitys.BusinessOpportunity", b =>
@@ -528,16 +442,22 @@ namespace WebApplication1.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTask", b =>
+            modelBuilder.Entity("WebApplication1.Models.User", b =>
                 {
+                    b.Navigation("UserBusinessOpportunities");
+
+                    b.Navigation("UserRoles");
+
                     b.Navigation("UserWorkTasks");
 
                     b.Navigation("WorkTaskHours");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTaskOpportunity", b =>
+            modelBuilder.Entity("WebApplication1.Models.WorkTaskModel.WorkTask", b =>
                 {
-                    b.Navigation("UserWorkTaskOpportunities");
+                    b.Navigation("UserWorkTasks");
+
+                    b.Navigation("WorkTaskHours");
                 });
 #pragma warning restore 612, 618
         }

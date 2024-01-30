@@ -40,8 +40,10 @@ namespace WebApplication1.Controllers
                 OtherRequirements = workTaskDto.OtherRequirements,
                 Placement = workTaskDto.Placement,
                 PricePerHour = workTaskDto.PricePerHour,
-
-
+                Totalvärde = workTaskDto.Totalvärde, // Newly added property
+                AvtalAnsvarig = workTaskDto.AvtalAnsvarig, // Newly added property
+                AvtalKontakt = workTaskDto.AvtalKontakt, // Newly added property
+                                                         // Add any other new properties here
             };
 
             // Adding the WorkTask to the DbContext
@@ -68,12 +70,20 @@ namespace WebApplication1.Controllers
             {
                 Id = workTask.Id,
                 Company = workTask.Company,
-                // ... Map other properties as needed
+                AvtalAnsvarig = workTask.AvtalAnsvarig,
+                Totalvärde = workTask.Totalvärde,
+                Description = workTask.Description,
+                OrderDate = workTask.OrderDate,
+                AvtalKontakt = workTask.AvtalKontakt,
+               
+                
+                // ... Map other properties as needed for the response
             };
 
             // Returning the created WorkTask DTO
             return Ok(responseDto);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllWorkTasks()
@@ -83,12 +93,32 @@ namespace WebApplication1.Controllers
                 {
                     Id = wt.Id,
                     Company = wt.Company,
-                    // Map other properties
+                    ContactPerson = wt.ContactPerson,
+                    OrderDate = wt.OrderDate,
+                    Currency = wt.Currency,
+                    PipelineLevel = wt.PipelineLevel,
+                    SalesResponsible = wt.SalesResponsible,
+                    Description = wt.Description,
+                    ScopePercentage = wt.ScopePercentage,
+                    StartDate = wt.StartDate,
+                    EndDate = wt.EndDate,
+                    DueDate = wt.DueDate,
+                    Role = wt.Role,
+                    AssignmentDescription = wt.AssignmentDescription,
+                    CompetenceRequirements = wt.CompetenceRequirements,
+                    OtherRequirements = wt.OtherRequirements,
+                    Placement = wt.Placement,
+                    PricePerHour = wt.PricePerHour,
+                    Totalvärde = wt.Totalvärde, // Newly added property
+                    AvtalAnsvarig = wt.AvtalAnsvarig, // Newly added property
+                    AvtalKontakt = wt.AvtalKontakt, // Newly added property
+                                                    // ... Add other properties from WorkTask as needed
                 })
                 .ToListAsync();
 
             return Ok(workTasks);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWorkTask(int id, [FromBody] WorkTaskUpdateDto updateDto)

@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Models.BusinessOpportunitys
+﻿using WebApplication1.Models.BusinessOpportunitys;
+
+namespace WebApplication1.Models
 {
     public class UserBusinessOpportunity
     {

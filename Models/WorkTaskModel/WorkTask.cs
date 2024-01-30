@@ -2,6 +2,7 @@
 {
     public class WorkTask
     {
+
         public int Id { get; set; }
         public string Company { get; set; }
         public string ContactPerson { get; set; }
@@ -21,10 +22,13 @@
         public string Placement { get; set; }
         public decimal PricePerHour { get; set; }
         public double HoursWorked { get; set; } // Add this line
-
+        public decimal Totalvärde { get; set; } // Matches Totalvärde from Deals
+        public string AvtalAnsvarig { get; set; } // Matches Avtal ansvarig from Deals
+        public string AvtalKontakt { get; set; } // Matches Avtal kontakt from Deals
 
         public bool IsCompleted { get; set; } = false; // New property, defaulting to false
 
+    
 
         public ICollection<UserWorkTask> UserWorkTasks { get; set; }
 
